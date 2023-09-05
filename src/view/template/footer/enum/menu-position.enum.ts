@@ -1,4 +1,4 @@
 export enum MenuPositionEnum {
-    HOME = 0,
-    PROFILE = 1
+    HOME = 'Home',
+    PROFILE = 'Profile'
   }

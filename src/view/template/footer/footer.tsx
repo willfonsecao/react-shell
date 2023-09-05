@@ -1,26 +1,28 @@
 //import liraries
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, DimensionValue } from 'react-native';
-import { useRoute } from '@react-navigation/native';
 
-import { IoMenu } from 'react-icons/io5';
+import IoIcon from 'react-native-vector-icons/Ionicons';
 
-import { RiHome4Fill } from 'react-icons/ri';
-import { RiHome4Line } from 'react-icons/ri';
-
-import { BiSolidUser } from 'react-icons/bi';
-import { BiUser } from 'react-icons/bi';
+import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Variables from 'wf-common/src/themes/styles/variables/variables';
 import { connect } from 'react-redux';
 
 import { MenuPositionEnum } from './enum/menu-position.enum';
 import BaseThemeComponent from '../../../../core/components/base-theme';
+import { ThemeProps } from '../../../../core/models/theme-prop';
+import { getCurrentRoute } from '../../../../core/navigator/root-navigator';
 
 interface State {
     activeButtonPosition: MenuPositionEnum;
 }
-class FooterComponent extends BaseThemeComponent<State> {
+
+interface FooterProps extends ThemeProps {
+    navigation: any;
+}
+class FooterComponent extends BaseThemeComponent<FooterProps, State> {
 
     constructor(props) {
         super(props);
@@ -29,8 +31,16 @@ class FooterComponent extends BaseThemeComponent<State> {
         }
     }
 
+    componentDidUpdate(): void {
+        const activeRoute = getCurrentRoute();
+        if (activeRoute && this.state.activeButtonPosition !== activeRoute.name) {
+            this.setState({ activeButtonPosition: activeRoute.name as MenuPositionEnum });
+        }
+    }
+
     navigate(goTo: MenuPositionEnum, route: string): void {
         this.setState({ activeButtonPosition: goTo });
+        this.props.navigation.navigate(route);
     };
 
     get activePage(): MenuPositionEnum {
@@ -38,11 +48,11 @@ class FooterComponent extends BaseThemeComponent<State> {
     }
 
     get userIcon(): any {
-        return this.activePage === MenuPositionEnum.PROFILE ? <BiSolidUser /> : <BiUser />;
+        return this.activePage === MenuPositionEnum.PROFILE ? <Icon name='user' size={21} /> : <Icon name='user-o' size={20} />;
     }
 
     get homeIcon(): any {
-        return this.activePage === MenuPositionEnum.HOME ? <RiHome4Fill /> : <RiHome4Line />;
+        return this.activePage === MenuPositionEnum.HOME ? <MIcon name='home-thermometer' size={26} /> : <MIcon name='home-thermometer-outline' size={26} />;
     }
 
     render() {
@@ -55,17 +65,17 @@ class FooterComponent extends BaseThemeComponent<State> {
             <View style={styles.footerContainer}>
                 <TouchableOpacity
                     key={0}
-                    style={[styles.menuButton, { backgroundColor: activePageColor}]}
+                    style={[styles.menuButton, { backgroundColor: activePageColor }]}
                     onPress={() => this.toggleSibeMenu()}>
-                    <Text style={[styles.buttonText, { marginRight: Variables.spacing as DimensionValue }]}>
-                        <IoMenu />
+                    <Text style={[styles.buttonText, { marginRight: Variables.spacingXs as DimensionValue }]}>
+                        <IoIcon name='menu' size={22} />
                     </Text>
                 </TouchableOpacity>
-                <View style={[styles.footer, {backgroundColor: footerBackground}]}>
+                <View style={[styles.footer, { backgroundColor: footerBackground }]}>
                     <TouchableOpacity
                         key={1}
                         style={styles.navigatorButton}
-                        onPress={() => this.navigate(MenuPositionEnum.HOME, '')}>
+                        onPress={() => this.navigate(MenuPositionEnum.HOME, 'Home')}>
                         <Text style={[styles.buttonText, { color: this.activePage === MenuPositionEnum.HOME ? activePageColor : defaultPageColor }]}>
                             {this.homeIcon}
                         </Text>
@@ -73,7 +83,7 @@ class FooterComponent extends BaseThemeComponent<State> {
                     <TouchableOpacity
                         key={2}
                         style={styles.navigatorButton}
-                        onPress={() => this.navigate(MenuPositionEnum.PROFILE, '')}>
+                        onPress={() => this.navigate(MenuPositionEnum.PROFILE, 'Profile')}>
                         <Text style={[styles.buttonText, { color: this.activePage === MenuPositionEnum.PROFILE ? activePageColor : defaultPageColor }]}>
                             {this.userIcon}
                         </Text>
@@ -91,7 +101,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         placeContent: 'center',
         width: '100%',
-        bottom: '1.5%',
+        bottom: Variables.spacingMd as DimensionValue,
         left: 0,
         flexDirection: 'row'
     },
@@ -100,7 +110,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
         position: 'relative',
-        padding: Variables.spacing as DimensionValue,
+        padding: Variables.spacingXs as DimensionValue,
         borderRadius: 19,
         height: 50,
         width: 'auto',
@@ -122,9 +132,7 @@ const styles = StyleSheet.create({
         marginRight: 15,
     },
     buttonText: {
-        fontSize: 22,
         color: 'white',
-        marginBottom: -4
     }
 });
 

@@ -1,14 +1,18 @@
 import React from 'react';
 import { View, StyleSheet, DimensionValue, TouchableOpacity } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Variables from 'wf-common/src/themes/styles/variables/variables';
 import { connect } from 'react-redux';
 
-import ViewNavigator from './view-navigator';
 import FooterComponent from './template/footer/footer';
 import BaseThemeComponent from '../../core/components/base-theme';
+import { ThemeProps } from '../../core/models/theme-prop';
+import HomeComponent from './screens/home/home';
+import ProfileComponent from './screens/profile/profile';
 
-class ViewRoot extends BaseThemeComponent {
+const Tab = createBottomTabNavigator();
+class ViewRoot extends BaseThemeComponent<ThemeProps> {
 
     render() {
         this.listenThemeChanging();
@@ -16,12 +20,24 @@ class ViewRoot extends BaseThemeComponent {
         const isMenuOpened = (this.props as any).isSideMenuOpened;
 
         return (
-            <View style={[isMenuOpened ? styles.floatingContainer : styles.container, { backgroundColor: backgroundColor}]} id='view'>
+            <View style={[isMenuOpened ? styles.floatingContainer : styles.container, { backgroundColor: backgroundColor }]} id='view'>
+
                 <TouchableOpacity style={[styles.toucheblaArea, isMenuOpened ? styles.enabledToucheblaArea : null]} onPress={() => this.toggleSibeMenu()}></TouchableOpacity>
                 <View style={[styles.containerShadow, { opacity: isMenuOpened ? 1 : 0 }]} id="container-shadow">
                 </View>
-                <ViewNavigator></ViewNavigator>
-                <FooterComponent></FooterComponent>
+
+                <Tab.Navigator initialRouteName='Home' tabBar={props => <FooterComponent navigation={props.navigation} />} screenOptions={{
+                    headerShown: false,
+                }} >
+                    <Tab.Screen
+                        name="Home"
+                        component={HomeComponent}
+                    />
+                    <Tab.Screen
+                        name="Profile"
+                        component={ProfileComponent}
+                    />
+                </Tab.Navigator>
             </View>
         );
     }
@@ -30,7 +46,8 @@ class ViewRoot extends BaseThemeComponent {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: Variables.spacing as DimensionValue,
+        padding: Variables.spacingXs as DimensionValue,
+        zIndex: 1
     },
     floatingContainer: {
         width: 500,

@@ -5,8 +5,7 @@ import ThemeService from 'wf-common/src/themes/services/theme.service';
 import { ThemeProps } from '../models/theme-prop';
 import { updateActiveThemeAction } from '../../redux/actions/theme.actions';
 import { updateSideMenuStateAction } from '../../redux/actions/sidemenu.actions';
-
-class BaseThemeComponent<T = any> extends Component<ThemeProps, T> {
+class BaseThemeComponent<T = ThemeProps, K = any> extends Component<T, K> {
     themeService: ThemeService = new ThemeService();
 
     static mapStateToProps = state => {
@@ -21,22 +20,30 @@ class BaseThemeComponent<T = any> extends Component<ThemeProps, T> {
         updateSideMenuState: updateSideMenuStateAction,
     };
 
-    constructor(props: ThemeProps) {
+    constructor(props: T) {
         super(props);
     }
 
     toggleSibeMenu(): void {
-        this.props.updateSideMenuState(!(this.props as any).isSideMenuOpened);
+        if ('updateSideMenuState' in this.props) {
+            this.prop.updateSideMenuState(!(this.props as any).isSideMenuOpened);
+        }
     }
 
     activateTheme(themeName: string): void {
-        this.props.updateActiveTheme(themeName);
+        if ('updateActiveTheme' in this.props) {
+            this.prop.updateActiveTheme(themeName);
+        }
     }
 
     listenThemeChanging(): void {
         if ((this.props as any).activeTheme !== this.themeService.activeTheme.name) {
             this.themeService.activateTheme((this.props as any).activeTheme);
         }
+    }
+
+    private get prop(): any {
+        return this.props
     }
 }
 

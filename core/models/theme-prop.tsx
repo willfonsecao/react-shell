@@ -1,5 +1,3 @@
-import ThemeService from "wf-common/src/themes/services/theme.service";
-
 export interface ThemeProps {
     activeTheme: string;
     isSideMenuOpened: boolean;
